@@ -19,14 +19,25 @@ st.sidebar.warning("3. 📚 Knowledge Base Tool (AI & LangChain info)")
 
 
 # --- TOOL DEFINITIONS ---
+import math
+import re
+
 def calculator_tool(expression):
-  try:
-    # Safe evaluation for basic math
-    allowed_names = {"sqrt": math.sqrt, "pow": pow}
-    result = eval(expression, {"__builtins__": None}, allowed_names)
-    return f"Calculated Result: {result}"
-  except Exception:
-    return "Error: Invalid mathematical expression."
+    try:
+        # String mein se sirf valid math characters (digits, operators, dots, spaces) nikalna
+        expr_str = str(expression)
+        match_chars = re.findall(r'[0-9+\-*/().]', expr_str)
+        cleaned_expr = "".join(match_chars)
+        
+        # Agar koi expression na mile
+        if not cleaned_expr:
+            return "Error: Invalid mathematical expression."
+            
+        allowed_names = {"sqrt": math.sqrt, "pow": pow, "abs": abs, "round": round}
+        result = eval(cleaned_expr, {"__builtins__": None}, allowed_names)
+        return f"Calculated Result: {result}"
+    except Exception as e:
+        return "Error: Invalid mathematical expression."
 
 
 def datetime_tool():
